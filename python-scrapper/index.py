@@ -1,6 +1,6 @@
 import requests 
 from bs4 import BeautifulSoup
-from helpers import get_data_from_span
+from helpers import get_recipe_data_from_legacy_page, get_data_from_span
 
 URL = 'https://www.allrecipes.com/recipes/96/salad/'
 page_to_scrap = 1
@@ -20,25 +20,22 @@ for page_id in range(page_to_scrap + 1):
             recipe_links.append(recipe_link['href'])
 
 
-data = []
+recipes_data = {}
 for link in recipe_links:
     r = requests.get(link)
     soup = BeautifulSoup(r.content, 'html.parser') 
     recipe_data_section = soup.find('section', {"class" : "nutrition-section"})
     if recipe_data_section is None:
-        # Probably legacy page desing, that uses different class names. 
-        recipe_data_section = soup.find('div', {"class" : "nutrition-summary-facts"})
-        if recipe_data_section: 
-            recipe_data = recipe_data_section.find_all('span')
-        else:
-            recipe_data = False
+        # Probably legacy page desing, that uses different class names. 4
+        recipe_data_section_html = soup.find('div', {"class" : "nutrition-summary-facts"})
+        if recipe_data_section_html : 
+            recipes_data[link] = get_data_from_span(str(recipe_data_section_html))
     else: 
-        recipe_data = recipe_data_section.find('div', {"class": "section-body"})
+        text_data = recipe_data_section.find('div', {"class": "section-body"}).text.strip()
+        
     
 
-def get_recipe_data_from_legacy_page(soup):
-    recipe_data_section = soup.find('div', {"class" : "nutrition-summary-facts"})
-    data = get_data_from_span(recipe_data_section)
+print(recipes_data)
 
-    print(data)
+
 
