@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+
 html = """
 <div class="nutrition-summary-facts">
 <br/>
@@ -14,20 +15,25 @@ html = """
 """
 attrs = ['calories', 'fatContent', 'carbohydrateContent', 'proteinContent', 'cholesterolContent', 'sodiumContent']
 
-def get_data_from_span(spans): 
+
+def get_data_from_span(spans):
     soup = BeautifulSoup(spans, 'html.parser')
     data = {}
     for attr in attrs:
         span = soup.find('span', {'itemprop': attr})
-        if span: 
+        if span:
             value = span.text.strip()
-            if value: 
-                data[attr] = value 
+            if value:
+                data[attr] = value
     return data
 
 
 def get_recipe_data_from_legacy_page(html):
-    if html: 
+    if html:
         return get_data_from_span(html)
     return False
 
+
+def get_data_from_text(text):
+    text = text.strip()
+    print(text)
