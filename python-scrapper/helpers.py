@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+import re
 
 html = """
 <div class="nutrition-summary-facts">
@@ -47,9 +48,28 @@ def get_recipe_data_from_legacy_page(page_html):
         # Get title/name 
     return False
 
-def extract_legacy_ingredients(html):
-    
-
 def get_data_from_text(text):
     text = text.strip()
-    print(text)
+    text = text.replace(" ", "")
+    data = {}
+
+    #mapping
+    attrs = {'calories' : 'calories', 'gtotalfat' : 'fatContent', 'mgcholesterol' : 'cholesterolContent', 'gprotein' : 'proteinContent', 'mg' : 'sodiumContent', 'gcarbohydrates' : 'carbohydrateContent'}
+    final_data = {}
+    data = text.split(';')
+    for item in  data:
+        if 'sodium' in item:
+            elem = item.split('sodium.')
+            data.append(elem[0])
+            data.append(elem[1])
+            data.remove(item)
+        if '<ahref' in item :
+            data.remove(item)
+
+
+    for item in data :
+        match = re.match(r"([0-9^.]+)([a-z]+)", item, re.I)
+        key = attrs[match.group(2)]
+        final_data[key] = match.group(1)
+    
+    return final_data
