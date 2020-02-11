@@ -26,8 +26,24 @@ def get_data_from_span(spans):
     return data
 
 
-def get_recipe_data_from_legacy_page(html):
-    if html: 
-        return get_data_from_span(html)
+def get_recipe_data_from_legacy_page(page_html):
+    if page_html: 
+        soup = BeautifulSoup(page_html, 'html.parser') 
+        # Setting up different soups
+        soup_ingredients = soup.select('ul[class*="list-ingredients-"]')
+        soup_facts = soup.find('div', {"class" : "nutrition-summary-facts"})
+        soup_submitter = soup.find('span', {"class" : "submitter__name"})
+
+        # getting data from soups
+        nutrition_facts = get_data_from_span(str(soup_facts))
+        submitter = soup_submitter.text.strip()
+
+        print(soup_ingredients)
+        # Get ingredients 
+        # Get submitter
+        # Get description 
+        # Get title/name 
     return False
 
+def extract_legacy_ingredients(html):
+    
