@@ -102,3 +102,9 @@ def get_text_from_ul_legacy(ul):
             titles.append(title)
 
     return titles
+
+def check_es_connect(es): 
+    if es.ping():
+        print("You are connected") 
+    else: 
+        print("You are not connected") 

@@ -1,7 +1,7 @@
 import requests 
 from bs4 import BeautifulSoup
 from helpers import get_recipe_data_from_legacy_page
-
+from eslatic
 URL = 'https://www.allrecipes.com/recipes/96/salad/'
 page_to_scrap = 1
 r = requests.get(URL) 
@@ -32,9 +32,10 @@ for link in recipe_links:
     else: 
         text_data = recipe_data_section.find('div', {"class": "section-body"}).text.strip()
         
-    
 
-print(recipes_data)
+
+
+# print(recipes_data)
 
 
 
