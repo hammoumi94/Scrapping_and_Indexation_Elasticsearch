@@ -1,7 +1,7 @@
 from elasticsearch import Elasticsearch
 import pandas as pd
 
-def create_index(es_object, index_name='recipes', types="recipe"):
+def create_index(es_object, index_name='RECIPES', types="RECIPE"):
     created = False
     # index settings
     settings = {
@@ -24,12 +24,27 @@ def create_index(es_object, index_name='recipes', types="recipe"):
                     },
                     "nutrition_facts": {
                         "calories": {
-
+                            "type" : "double"
                         }, 
                         "fatContent" :{
-
+                            "type" : "double"
+                        },
+                        "carbohydrateContent" :{
+                            "type" : "double"
+                        },
+                        "cholesterolContent" :{
+                            "type" : "double"
+                        },
+                        "proteinContent" :{
+                            "type" : "double"
+                        },
+                        "sodiumContent" :{
+                            "type" : "double"
                         }
                     },
+                    "ingredients": {
+                        "type": "nested"
+                    }
                 }
             }
         }
@@ -37,14 +52,14 @@ def create_index(es_object, index_name='recipes', types="recipe"):
     try:
         if not es_object.indices.exists(index_name):
                 # Ignore 400 means to ignore "Index Already Exist" error.
-            es_object.indices.create(index=index_name, type=types, ignore=400, body=settings)
+            es_object.indices.create(index=index_name, ignore=400, body=settings)
             print('Created Index')
             created = True
     except Exception as ex:
         print(str(ex))
     finally:
-            return created
+        return created
 
 
-es = Elasticsearch(['http://localhost:9200/'], verify_certs=True)
+es = Elasticsearch()
 create_index(es)
