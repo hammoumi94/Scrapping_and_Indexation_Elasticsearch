@@ -1,9 +1,10 @@
 import requests 
 from bs4 import BeautifulSoup
 from helpers import get_recipe_data_from_legacy_page, get_recipe_data_from_page
+import json
 
 URL = 'https://www.allrecipes.com/recipes/96/salad/'
-page_to_scrap = 1
+page_to_scrap = 0
 r = requests.get(URL) 
 
 
@@ -39,10 +40,18 @@ for link in recipe_links:
     except Exception as error:
         print(error) 
     
-        
-    
+#print(recipes_data)
 
-print(recipes_data)
+jsonfile = open('final_data.json', 'w')
 
+jsonfile.write('[')
+for row in recipes_data :
+    #print(recipes_data[row])
+    json.dump(recipes_data[row], jsonfile)
+    jsonfile.write(',')
+    jsonfile.write('\n')
+
+jsonfile.write(']')
+#print(jsonfile)
 
 
