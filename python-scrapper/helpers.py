@@ -52,7 +52,7 @@ def get_recipe_data_from_legacy_page(page_html):
         rating = soup_ratings.get('data-ratingstars')
         # Get ingredients 
         for ul in soup_ingredients: 
-            data['ingerdients'] += get_text_from_ul_legacy(ul)
+            data['ingredients'] += get_text_from_ul_legacy(ul)
         # Get submitter
         data['submitter'] = submitter
         # Get description 
@@ -71,14 +71,15 @@ def get_recipe_data_from_page(page_html):
     '\\xc2\\xbc' : '1/4',      # one quarter
     '\\xc2\\xbd' : '1/2',      # one half
     '\\xc2\\xbe' : '3/4',      # three quarters  
-    '\\xe2\\x85\\x93' : '1/3',
+    '\\xe2\\x85\\x93' : '1/3', 
     '\\xe2\\x85\\x9b' : '1/8' 
     }
     final_data = {}
     ingredients = []
-
     if page_html: 
         soup = BeautifulSoup(page_html, 'html.parser')
+
+        # Get ingredients 
         soup_ingredients = soup.find_all('span',{"class" : "ingredients-item-name"})
         for ingredient in soup_ingredients:
             ingredient = ingredient.text
@@ -90,20 +91,32 @@ def get_recipe_data_from_page(page_html):
             if (key in ingredient) and (key in chars):
                 ingredient = ingredient.replace(key,  chars[key])
             ingredients.append(ingredient)
-
         final_data["ingredients"] = ingredients
+        
+        #Get submitter
+        soup_submitter = soup.find('a', {"class" : "author-name"})
+        if soup_submitter:
+            final_data["submitter"] = soup_submitter.text
+        else:
+            soup_submitter = soup.find('span', {"class" : "author-name"})
+            final_data["submitter"] = soup_submitter.text
 
-        soup_submitter = soup.find('a', {"class" : "author-name link"})
-        final_data["submitter"] = soup_submitter.text
-
+        #Get title
         soup_title = soup.find('h1', {"class" : "headline heading-content"})
         final_data["title"] = soup_title.text
 
+        #Get description
+        soup_description = soup.find('div', {"class" : "recipe-summary"})
+        soup_description = soup_description.text.replace('\\n', "")
+        soup_description = soup_description.replace("  ", "")
+        final_data["description"] = soup_description
+
+        #Get nutrition fects
         recipe_data_section = soup.find('section', {"class" : "nutrition-section"})
         text_data = recipe_data_section.find('div', {"class": "section-body"}).text.strip()
         final_data["nutrition_facts"] = get_data_from_text(text_data)
 
-        print(final_data)
+        #return final object
         return final_data
     return False
 
@@ -115,6 +128,7 @@ def get_text_from_ul_legacy(ul):
         title = label.get('title')
         if(title) :
             titles.append(title)
+    return titles
 
 def get_data_from_text(text):
     text = text.strip()
