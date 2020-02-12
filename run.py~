@@ -1,5 +1,6 @@
 from ConverterJSON import converter
 from Index import index
+from helpers import get_data_from_text
 import re
 #converter()
 #index()
