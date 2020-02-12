@@ -92,8 +92,12 @@ def get_recipe_data_from_page(page_html):
 
         final_data["ingredients"] = ingredients
 
-        soup_submitter = soup.find('a', {"class" : "author-name link"})
-        final_data["submitter"] = soup_submitter.text
+        soup_submitter = soup.find('a', {"class" : "author-name"})
+        if soup_submitter:
+            final_data["submitter"] = soup_submitter.text
+        else:
+            soup_submitter = soup.find('span', {"class" : "author-name"})
+            final_data["submitter"] = soup_submitter.text
 
         soup_title = soup.find('h1', {"class" : "headline heading-content"})
         final_data["title"] = soup_title.text
@@ -114,6 +118,7 @@ def get_text_from_ul_legacy(ul):
         title = label.get('title')
         if(title) :
             titles.append(title)
+    return titles
 
 def get_data_from_text(text):
     text = text.strip()

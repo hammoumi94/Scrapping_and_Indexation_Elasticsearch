@@ -12,6 +12,7 @@ r = requests.get(URL)
 recipe_links = []
 for page_id in range(page_to_scrap + 1):
     r = requests.get(URL + '?page=' + str(page_id)) 
+    print('Visting page : ' + URL + '?page=' + str(page_id))
     soup = BeautifulSoup(r.content, 'html.parser') 
     recipes = soup.find_all("article", {"class":"fixed-recipe-card"})
     for recipe in recipes:
@@ -26,6 +27,8 @@ for link in recipe_links:
     soup = BeautifulSoup(r.content, 'html.parser') 
     recipe_data_section = soup.find('section', {"class" : "nutrition-section"})
     body = soup.find('body')
+    print('Visting page : ' + link)
+
     if recipe_data_section is None:
         # Probably legacy page desing, that uses different class names. 4
         
