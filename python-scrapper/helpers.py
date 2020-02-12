@@ -31,7 +31,7 @@ def get_data_from_span(spans):
 
 def get_recipe_data_from_legacy_page(page_html):
     if page_html: 
-        soup = BeautifulSoup(page_html, 'html.parser') 
+        soup = BeautifulSoup(page_html, 'html.parser')
         # Setting up different soups
         soup_ingredients = soup.select('ul[class*="list-ingredients-"]')
         soup_facts = soup.find('div', {"class" : "nutrition-summary-facts"})
@@ -48,6 +48,55 @@ def get_recipe_data_from_legacy_page(page_html):
         # Get title/name 
     return False
 
+def get_recipe_data(page_html):
+    chars = {
+    '\\xc2\\xbc' : '1/4',      # one quarter
+    '\\xc2\\xbd' : '1/2',      # one half
+    '\\xc2\\xbe' : '3/4',      # three quarters  
+    '\\xe2\\x85\\x93' : '1/3',
+    '\\xe2\\x85\\x9b' : '1/8' 
+    }
+    final_data = {}
+    ingredients = []
+
+    if page_html: 
+        soup = BeautifulSoup(page_html, 'html.parser')
+        soup_ingredients = soup.find_all('span',{"class" : "ingredients-item-name"})
+        for ingredient in soup_ingredients:
+            ingredient = ingredient.text
+            ingredient = ingredient.strip()
+            ingredient = ingredient.replace('\\n', "")
+            ingredient = ingredient.replace("  ", "")
+            elem = ingredient.split(' ')
+            key = elem[0]
+            if (key in ingredient) and (key in chars):
+                ingredient = ingredient.replace(key,  chars[key])
+            ingredients.append(ingredient)
+
+        final_data["ingredients"] = ingredients
+
+        soup_submitter = soup.find('a', {"class" : "author-name link"})
+        final_data["submitter"] = soup_submitter.text
+
+        soup_title = soup.find('h1', {"class" : "headline heading-content"})
+        final_data["title"] = soup_title.text
+
+        recipe_data_section = soup.find('section', {"class" : "nutrition-section"})
+        text_data = recipe_data_section.find('div', {"class": "section-body"}).text.strip()
+        final_data["nutrition_facts"] = get_data_from_text(text_data)
+
+        print(final_data)
+        return final_data
+    return False
+
+
+
+
+
+
+
+
+
 def get_data_from_text(text):
     text = text.strip()
     text = text.replace(" ", "")
@@ -63,9 +112,8 @@ def get_data_from_text(text):
             data.append(elem[0])
             data.append(elem[1])
             data.remove(item)
-        if '<ahref' in item :
+        if 'Full' in item :
             data.remove(item)
-
 
     for item in data :
         match = re.match(r"([0-9^.]+)([a-z]+)", item, re.I)
