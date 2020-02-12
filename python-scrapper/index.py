@@ -4,7 +4,7 @@ from helpers import get_recipe_data_from_legacy_page, get_recipe_data_from_page
 import json
 
 URL = 'https://www.allrecipes.com/recipes/96/salad/'
-page_to_scrap = 0
+page_to_scrap = 20
 r = requests.get(URL) 
 
 

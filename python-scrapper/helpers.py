@@ -51,7 +51,7 @@ def get_recipe_data_from_legacy_page(page_html):
         rating = soup_ratings.get('data-ratingstars')
         # Get ingredients 
         for ul in soup_ingredients: 
-            data['ingerdients'] += get_text_from_ul_legacy(ul)
+            data['ingredients'] += get_text_from_ul_legacy(ul)
         # Get submitter
         data['submitter'] = submitter
         # Get description 
