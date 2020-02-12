@@ -17,7 +17,7 @@ html = """
 attrs = ['calories', 'fatContent', 'carbohydrateContent', 'proteinContent', 'cholesterolContent', 'sodiumContent']
 
 
-def get_data_from_span(spans):
+def get_nutrition_facts_from_span(spans):
     soup = BeautifulSoup(spans, 'html.parser')
     data = {}
     for attr in attrs:
@@ -31,24 +31,41 @@ def get_data_from_span(spans):
 
 def get_recipe_data_from_legacy_page(page_html):
     if page_html: 
-        soup = BeautifulSoup(page_html, 'html.parser')
+        data = {
+            'ingerdients': [],
+        }
+
+        soup = BeautifulSoup(page_html, 'html.parser') 
         # Setting up different soups
         soup_ingredients = soup.select('ul[class*="list-ingredients-"]')
         soup_facts = soup.find('div', {"class" : "nutrition-summary-facts"})
         soup_submitter = soup.find('span', {"class" : "submitter__name"})
-
+        soup_description = soup.find('div', {"class": "submitter__description"})
+        soup_title = soup.find('h1', {"class": "recipe-summary__h1"})
+        soup_ratings = soup.find('div', {"class": "rating-stars"})
         # getting data from soups
-        nutrition_facts = get_data_from_span(str(soup_facts))
+        nutrition_facts = get_nutrition_facts_from_span(str(soup_facts))
         submitter = soup_submitter.text.strip()
-
-        print(soup_ingredients)
+        description = soup_description.text.strip()
+        title = soup_title.text.strip()
+        rating = soup_ratings.get('data-ratingstars')
         # Get ingredients 
+        for ul in soup_ingredients: 
+            data['ingerdients'] += get_text_from_ul_legacy(ul)
         # Get submitter
+        data['submitter'] = submitter
         # Get description 
+        data['description'] = description
         # Get title/name 
+        data['title'] = title
+        # nutrition facts
+        data['nutrition_facts'] = nutrition_facts
+        #rating
+        data['rating'] = rating
+        return data
     return False
 
-def get_recipe_data(page_html):
+def get_recipe_data_from_page(page_html):
     chars = {
     '\\xc2\\xbc' : '1/4',      # one quarter
     '\\xc2\\xbd' : '1/2',      # one half
@@ -90,12 +107,13 @@ def get_recipe_data(page_html):
     return False
 
 
-
-
-
-
-
-
+def get_text_from_ul_legacy(ul):
+    titles = [] 
+    for li in ul.findAll('li'):
+        label = li.find('label')
+        title = label.get('title')
+        if(title) :
+            titles.append(title)
 
 def get_data_from_text(text):
     text = text.strip()
