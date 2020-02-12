@@ -1,21 +1,10 @@
-import requests
-from bs4 import BeautifulSoup
 
-def getHTMLContent(url): 
-    res = requests.get(url)
-    return res.content
+from elasticsearch import Elasticsearch
 
-soup = BeautifulSoup(getHTMLContent('https://www.allrecipes.com/recipes/96/salad/'), 'html.parser')
-results = soup.find_all("article", class_="fixed-recipe-card")
+def connect():
+    es = Elasticsearch(['http://localhost:9200/'], verify_certs=True)
+    if not es.ping():
+        raise ValueError("Connection failed")
+        
+    print("Vous êtes connectés")
 
-print(results)
-
-with open("getHTMLContent('https://www.allrecipes.com/recipes/96/salad/')", "r") as f:
-    
-    contents = f.read()
-
-    soup = BeautifulSoup(contents, 'lxml')
-
-    print(soup.h2)
-    print(soup.head)
-    print(soup.li)
