@@ -50,7 +50,7 @@ for row in recipes_data :
     json.dump(recipes_data[row], jsonfile)
     jsonfile.write(',')
     jsonfile.write('\n')
-
+json.write('{}')
 jsonfile.write(']')
 #print(jsonfile)
 
