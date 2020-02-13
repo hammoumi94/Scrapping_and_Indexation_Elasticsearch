@@ -9,8 +9,11 @@ Data Indexing with elasticsearch.
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 ## Project Steps
+<<<<<<< HEAD
 
 We followed the steps below in our project: 
+=======
+>>>>>>> master
 
 - Load csv data
 - Convert csv file to json 
